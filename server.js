@@ -41,6 +41,10 @@ app.use(session({
 app.use(flash());
 app.use(passport.initialize());
 app.use(passport.session());
+app.use(function(req, res, next) { // For get user everywhere
+  res.locals.user = req.user;
+  next();
+});
 
 app.engine('ejs', engine);
 app.set('view engine', 'ejs');
@@ -56,7 +60,6 @@ app.use(userRoutes);
 /*
 * APP LISTEN
 */
-
 app.listen(secret.port, err => {
   if (err)
     throw err;

@@ -3,6 +3,9 @@ const User = require('../models/user');
 const passport = require('passport');
 const passportConf = require('../config/passport');
 
+/*
+* LOGIN
+*/
 router.get('/login', function(req, res) {
   if (req.user)
     return res.redirect('/');
@@ -18,17 +21,10 @@ router.post('/login', passport.authenticate('local-login', {
   failureFlash: true
 }));
 
-router.get('/profile', function(req, res, next) {
-  User.findOne({ _id: req.user._id }, function(err, user) {
-    if (err)
-      return next(err);
 
-    res.render('account/profile', {
-      user
-    });
-  })
-});
-
+/*
+* SIGNUP
+*/
 router.get('/signup', function(req, res) {
   res.render('account/signup', {
     errors: req.flash('errors')
@@ -55,6 +51,30 @@ router.post('/signup', function(req, res, next) {
       return res.redirect('/');
     });
   });
+});
+
+
+/*
+* LOGOUT
+*/
+router.get('/logout', function(req, res, next) {
+  req.logout();
+  res.redirect('/');
+});
+
+
+/*
+* PROFILE
+*/
+router.get('/profile', function(req, res, next) {
+  User.findOne({ _id: req.user._id }, function(err, user) {
+    if (err)
+      return next(err);
+
+    res.render('account/profile', {
+      user
+    });
+  })
 });
 
 module.exports = router;
