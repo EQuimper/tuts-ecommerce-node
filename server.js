@@ -13,6 +13,9 @@ const passport = require('passport');
 const secret = require('./config/secret');
 const mainRoutes = require('./routes/main');
 const userRoutes = require('./routes/user');
+const adminRoutes = require('./routes/admin');
+const apiRoutes = require('./api/api');
+const Category = require('./models/category');
 
 const app = express();
 
@@ -45,6 +48,15 @@ app.use(function(req, res, next) { // For get user everywhere
   res.locals.user = req.user;
   next();
 });
+app.use(function(req, res, next) { // For get all the categories
+  Category.find({}, function(err, categories) {
+    if (err)
+      return next(err);
+
+    res.locals.categories = categories;
+    next();
+  });
+});
 
 app.engine('ejs', engine);
 app.set('view engine', 'ejs');
@@ -55,6 +67,8 @@ app.set('view engine', 'ejs');
 */
 app.use(mainRoutes);
 app.use(userRoutes);
+app.use(adminRoutes);
+app.use('/api', apiRoutes);
 
 
 /*

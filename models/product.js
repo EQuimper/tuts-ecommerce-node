@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const mongoosastic = require('mongoosastic');
 
 const Schema = mongoose.Schema;
 
@@ -7,6 +8,12 @@ const ProductSchema = new Schema({
   name: { type: String, required: true },
   price: { type: Number, required: true },
   image: { type: String }
+});
+
+ProductSchema.plugin(mongoosastic, {
+  hosts: [
+    'localhost:9200'
+  ]
 });
 
 module.exports = mongoose.model('Product', ProductSchema);
