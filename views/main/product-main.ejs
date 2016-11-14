@@ -1,10 +1,9 @@
-<% layou('layout') -%>
+<% layout('layout') -%>
 
 <div class="jumbotron" id="navbar-gap">
   <div class="container">
     <h1>Shop Smart, Save Big!</h1>
     <p>Find your favourite Product</p>
-
   </div>
 </div>
 
@@ -24,5 +23,21 @@
         </a>
       </div>
     <% } %>
+
+    <ul class="pagination text-center">
+      <li>
+        <% for (let i = 1; i <= pages; i++) { %>
+          <% if (i === 1) { %>
+            <li>
+              <a href="/"><%= i %></a>
+            </li>
+          <% } else { %>
+            <li>
+              <a href="/page/<%= i %>"><%= i %></a>
+            </li>
+          <% } %>
+        <% } %>
+      </li>
+    </ul>
   </div>
 </div>

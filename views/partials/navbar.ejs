@@ -4,14 +4,10 @@
       <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
         <span class="sr-only">Toggle navigation</span>
       </button>
-      <a class="navbar-brand" href="/">My Ecommerce</a>
+      <a class="navbar-brand" href="/">Ecommerce</a>
     </div>
 
-    <form
-      action="/search"
-      class="navbar-form navbar-left"
-      method="post"
-    >
+    <form action="/search" class="navbar-form navbar-left" method="post">
       <div class="form-group">
         <input
           type="text"
@@ -41,27 +37,27 @@
       </li>
 
       <% if (!user) { %>
-      <li>
-        <a href="#" data-toggle="dropdown" class="dropdown-toggle">
-          Signup / Login
-        </a>
-        <ul class="dropdown-menu">
-          <li><a href="/signup">Signup</a></li>
-          <li><a href="/login">Login</a></li>
-        </ul>
-      </li>
+        <li>
+          <a href="#" data-toggle="dropdown" class="dropdown-toggle">
+            Signup / Login
+          </a>
+          <ul class="dropdown-menu">
+            <li><a href="/signup">Signup</a></li>
+            <li><a href="/login">Login</a></li>
+          </ul>
+        </li>
 
       <% } else { %>
 
-      <li>
-        <a href="#" data-toggle="dropdown" class="dropdown-toggle">
-          <%= user.profile.name %>
-        </a>
-        <ul class="dropdown-menu">
-          <li><a href="/profile">Profile</a></li>
-          <li><a href="/logout">Logout</a></li>
-        </ul>
-      </li>
+        <li>
+          <a href="#" data-toggle="dropdown" class="dropdown-toggle">
+            <%= user.profile.name %>
+          </a>
+          <ul class="dropdown-menu">
+            <li><a href="/profile">Profile</a></li>
+            <li><a href="/logout">Logout</a></li>
+          </ul>
+        </li>
 
       <% } %>
 

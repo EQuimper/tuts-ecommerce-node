@@ -61,15 +61,13 @@ app.use(function(req, res, next) { // For get all the categories
 app.engine('ejs', engine);
 app.set('view engine', 'ejs');
 
-
 /*
 * APP ROUTES
 */
-app.use(mainRoutes);
 app.use(userRoutes);
+app.use(mainRoutes);
 app.use(adminRoutes);
 app.use('/api', apiRoutes);
-
 
 /*
 * APP LISTEN

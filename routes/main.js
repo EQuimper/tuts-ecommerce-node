@@ -1,6 +1,31 @@
 const router = require('express').Router();
 const Product = require('../models/product');
 
+function paginate(req, res, next) {
+  const perPage = 9;
+  const page = req.params.page;
+
+  Product
+    .find()
+    .skip(perPage * page)
+    .limit(perPage)
+    .populate('category')
+    .exec(function(err, products) {
+      if (err) {
+        return next(err);
+      }
+      Product.count().exec(function(err, count) {
+        if (err)
+          return next(err);
+
+        res.render('main/product-main', {
+          products,
+          pages: count / perPage
+        });
+      });
+    });
+}
+
 Product.createMapping(function(err, mapping) {
   if (err) {
     console.log("error creating maping");
@@ -26,7 +51,6 @@ router.get('/search', function(req, res, next) {
     Product.search({
       query_string: { query: req.query.q}
     }, function(err, results) {
-      results:
       if (err) return next(err);
       var data = results.hits.hits.map(function(hit) {
         return hit;
@@ -47,31 +71,16 @@ stream.on('error', function(err) {
   console.log(err);
 });
 
-router.get('/', (req, res) => {
+router.get('/', (req, res, next) => {
   if (req.user) {
-    const perPage = 9;
-    const page = req.params.page;
-
-    Product
-      .find()
-      .skip(perPage * page)
-      .limit(perPage)
-      .exec(function(err, products) {
-        if (err)
-          return next(err);
-
-          Product.count().exec(function(err, count) {
-            if (err)
-              return next(err);
-
-            res.render('main/product-main', {
-              products,
-              pages: count / perPage
-            });
-          });
-      });
+    paginate(req, res, next);
+  } else {
+    res.render('main/home');
   }
-  res.render('main/home');
+});
+
+router.get('/page/:page', (req, res, next) => {
+  paginate(req, res, next);
 });
 
 router.get('/about', (req, res) => {
