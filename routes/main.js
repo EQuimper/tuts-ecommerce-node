@@ -1,5 +1,6 @@
 const router = require('express').Router();
 const Product = require('../models/product');
+const Cart = require('../models/cart');
 
 function paginate(req, res, next) {
   const perPage = 9;
@@ -73,7 +74,7 @@ router.get('/cart', (req, res, next) => {
     .exec((err, foundCart) => {
       if (err) return next(err);
       res.render('main/cart', {
-        cart: foundCart
+        foundCart
       });
     });
 });
