@@ -16,6 +16,7 @@ const userRoutes = require('./routes/user');
 const adminRoutes = require('./routes/admin');
 const apiRoutes = require('./api/api');
 const Category = require('./models/category');
+const cartLength = require('./middlewares/middlewares');
 
 const app = express();
 
@@ -48,6 +49,7 @@ app.use(function(req, res, next) { // For get user everywhere
   res.locals.user = req.user;
   next();
 });
+app.use(cartLength);
 app.use(function(req, res, next) { // For get all the categories
   Category.find({}, function(err, categories) {
     if (err)

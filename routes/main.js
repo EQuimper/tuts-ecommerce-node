@@ -63,6 +63,25 @@ router.get('/search', function(req, res, next) {
   }
 });
 
+/*
+* Post item in the cart
+*/
+router.post('/product/:product_id', function(req, res, next) {
+  Cart.findOne({ ownser: req.user._id }, function(err, cart) {
+    if (err) return next(err);
+    cart.items.push({
+      item: req.body.product_id,
+      price: parseFloat(req.body.priceValue),
+      quantity: parseInt(req.body.quantity)
+    });
+    cart.total = (cart.total + parseFloat(req.body.priceValue)).toFixed(2);
+    cart.save(function(err) {
+      if (err) return next(err);
+      return res.redirect('/cart');
+    });
+  });
+});
+
 stream.on('close', function() {
   console.log(`Indexed ${count} documents`);
 });

@@ -1,5 +1,7 @@
 const router = require('express').Router();
+const async = require('async');
 const User = require('../models/user');
+const Cart = require('../models/cart');
 const passport = require('passport');
 const passportConf = require('../config/passport');
 
@@ -32,31 +34,39 @@ router.get('/signup', function(req, res) {
 });
 
 router.post('/signup', function(req, res, next) {
-  const user = new User();
-
-  user.profile.name = req.body.name;
-  user.email = req.body.email;
-  user.password = req.body.password;
-  user.profile.picture = user.gravatar();
-
-  User.findOne({ email: req.body.email }, function(err, existingUser) {
-    if (existingUser) {
-      req.flash('errors', 'Account with that email address already exists!');
-      return res.redirect('/signup')
-    }
-
-    user.save(function(err, user) {
-      if (err)
-        return next(err)
-
-      req.login(user, function(err) {
-        if (err)
-          return next(err);
-
-        res.redirect('/profile');
+  async.waterfall([
+    function(cb) {
+      const user = new User();
+      user.profile.name = req.body.name;
+      user.email = req.body.email;
+      user.password = req.body.password;
+      user.profile.picture = user.gravatar();
+      User.findOne({ email: req.body.email }, function(err, existingUser) {
+        if (existingUser) {
+          req.flash('errors', 'Account with that email address already exists!');
+          return res.redirect('/signup')
+        }
+        user.save(function(err, user) {
+          if (err) return next(err);
+          cb(null, user);
+        });
       });
-    });
-  });
+    },
+    function(user) {
+      /*
+      * Create an cart on user creation
+      */
+      const cart = new Cart();
+      cart.owner = user._id;
+      cart.save(function(err) {
+        if (err) return next(err);
+        req.login(user, function(err) {
+          if (err) return next(err);
+          res.redirect('/profile');
+        });
+      });
+    }
+  ]);
 });
 
 
@@ -74,9 +84,7 @@ router.get('/logout', function(req, res, next) {
 */
 router.get('/profile', function(req, res, next) {
   User.findOne({ _id: req.user._id }, function(err, user) {
-    if (err)
-      return next(err);
-
+    if (err) return next(err);
     res.render('account/profile', {
       user
     });
@@ -95,9 +103,7 @@ router.get('/edit-profile', function(req, res) {
 
 router.post('/edit-profile', function(req, res, next) {
   User.findOne({ _id: req.user.id }, function(err, user) {
-    if (err)
-      return next(err);
-
+    if (err) return next(err);
     if (req.body.name)
       user.profile.name = req.body.name
 
@@ -105,9 +111,7 @@ router.post('/edit-profile', function(req, res, next) {
       user.address = req.body.address
 
     user.save(function(err) {
-      if (err)
-        return next(err);
-
+      if (err) return next(err);
       req.flash('success', 'Successfully edited your profile');
       return res.redirect('/edit-profile');
     });
