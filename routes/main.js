@@ -64,10 +64,25 @@ router.get('/search', function(req, res, next) {
 });
 
 /*
+* Get Cart
+*/
+router.get('/cart', (req, res, next) => {
+  Cart
+    .findOne({ owner: req.user._id })
+    .populate('items.item')
+    .exec((err, foundCart) => {
+      if (err) return next(err);
+      res.render('main/cart', {
+        cart: foundCart
+      });
+    });
+});
+
+/*
 * Post item in the cart
 */
 router.post('/product/:product_id', function(req, res, next) {
-  Cart.findOne({ ownser: req.user._id }, function(err, cart) {
+  Cart.findOne({ owner: req.user._id }, function(err, cart) {
     if (err) return next(err);
     cart.items.push({
       item: req.body.product_id,
