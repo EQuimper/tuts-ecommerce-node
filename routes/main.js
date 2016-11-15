@@ -1,6 +1,8 @@
 const router = require('express').Router();
 const Product = require('../models/product');
 const Cart = require('../models/cart');
+const stripeApi = require('../config/api_key');
+const stripe = require('stripe')(stripeApi);
 
 function paginate(req, res, next) {
   const perPage = 9;
@@ -160,6 +162,20 @@ router.get('/product/:id', function(req, res, next) {
 
     res.render('main/product', {
       product
+    });
+  });
+});
+
+router.post('/paiement', (req, res, next) => {
+  const stripeToken = req.body.stripeToken;
+  const currentCharges = Math.round(req.body.stripeMoney * 100);
+  stripe.customers.create({
+    source: stripeToken
+  }).then(customer => {
+    return stripe.charges.create({
+      amount: currentCharges,
+      currency: 'cad',
+      customer: customer.id
     });
   });
 });
